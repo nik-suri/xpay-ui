@@ -126,11 +126,6 @@ function Source() {
     },
     [dispatch]
   );
-  const handleMaxClick = useCallback(() => {
-    if (uiAmountString) {
-      dispatch(setAmount(uiAmountString));
-    }
-  }, [dispatch, uiAmountString]);
   const handleNextClick = useCallback(() => {
     dispatch(incrementStep());
   }, [dispatch]);
@@ -199,17 +194,12 @@ function Source() {
           {hasParsedTokenAccount ? (
             <NumberTextField
               variant="outlined"
-              label="Amount"
+              label="Amount (USD)"
               fullWidth
               className={classes.transferField}
               value={amount}
-              onChange={handleAmountChange}
               disabled={shouldLockFields}
-              onMaxClick={
-                uiAmountString && !parsedTokenAccount.isNativeAsset
-                  ? handleMaxClick
-                  : undefined
-              }
+              onChange={handleAmountChange}
             />
           ) : null}
           <ChainWarningMessage chainId={sourceChain} />

@@ -243,19 +243,19 @@ export const selectTransferSourceError = (
     ) {
       return "Amount must be greater than zero";
     }
-    if (
-      parseUnits(
-        state.transfer.amount,
-        state.transfer.sourceParsedTokenAccount.decimals
-      ).gt(
-        parseUnits(
-          state.transfer.sourceParsedTokenAccount.uiAmountString,
-          state.transfer.sourceParsedTokenAccount.decimals
-        )
-      )
-    ) {
-      return "Amount may not be greater than balance";
-    }
+    // if (
+    //   parseUnits(
+    //     state.transfer.amount,
+    //     state.transfer.sourceParsedTokenAccount.decimals
+    //   ).gt(
+    //     parseUnits(
+    //       state.transfer.sourceParsedTokenAccount.uiAmountString,
+    //       state.transfer.sourceParsedTokenAccount.decimals
+    //     )
+    //   )
+    // ) {
+    //   return "Amount may not be greater than balance";
+    // }
   } catch (e: any) {
     if (e?.message) {
       return e.message.substring(0, e.message.indexOf("("));
@@ -379,4 +379,8 @@ export const selectRelayerTokenInfo = (state: RootState) => {
 
 export const selectMerchantId = (state: RootState) => {
   return state.transfer.merchantId;
+}
+
+export const selectActualTokenAmount = (state: RootState) => {
+  return state.transfer.actualTokenAmount;
 }

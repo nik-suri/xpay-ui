@@ -15,6 +15,7 @@ import useAllowance from "../../hooks/useAllowance";
 import { useHandleTransfer } from "../../hooks/useHandleTransfer";
 import useIsWalletReady from "../../hooks/useIsWalletReady";
 import {
+  selectActualTokenAmount,
   selectMerchantId,
   selectSourceWalletAddress,
   selectTransferAmount,
@@ -60,29 +61,18 @@ function Send() {
 
   const sourceChain = useSelector(selectTransferSourceChain);
   const sourceAsset = useSelector(selectTransferSourceAsset);
-  const sourceAmount = useSelector(selectTransferAmount);
+  const actualTransferAmount = useSelector(selectActualTokenAmount);
+  const transferAmountParsed = actualTransferAmount ? BigInt(actualTransferAmount) : BigInt(0);
+
   const sourceParsedTokenAccount = useSelector(
     selectTransferSourceParsedTokenAccount
   );
-  const relayerFee = useSelector(selectTransferRelayerFee);
   const sourceDecimals = sourceParsedTokenAccount?.decimals;
+  const humanReadableTransferAmount = actualTransferAmount && sourceDecimals
+    ? (parseFloat(actualTransferAmount) / 10 ** sourceDecimals).toString()
+    : "";
+    
   const sourceIsNative = sourceParsedTokenAccount?.isNativeAsset;
-  const baseAmountParsed =
-    sourceDecimals !== undefined &&
-    sourceDecimals !== null &&
-    sourceAmount &&
-    parseUnits(sourceAmount, sourceDecimals);
-  const feeParsed =
-    sourceDecimals !== undefined
-      ? parseUnits(relayerFee || "0", sourceDecimals)
-      : 0;
-  const transferAmountParsed =
-    baseAmountParsed && baseAmountParsed.add(feeParsed).toBigInt();
-  const humanReadableTransferAmount =
-    sourceDecimals !== undefined &&
-    sourceDecimals !== null &&
-    transferAmountParsed &&
-    formatUnits(transferAmountParsed, sourceDecimals);
   const oneParsed =
     sourceDecimals !== undefined &&
     sourceDecimals !== null &&
@@ -159,7 +149,7 @@ function Send() {
   const approveExactAmount = useMemo(() => {
     return () => {
       setAllowanceError("");
-      approveAmount(BigInt(transferAmountParsed)).then(
+      approveAmount(transferAmountParsed).then(
         () => {
           setAllowanceError("");
         },
@@ -221,7 +211,7 @@ function Send() {
                 ? "Unlimited"
                 : humanReadableTransferAmount
                 ? humanReadableTransferAmount
-                : sourceAmount) +
+                : actualTransferAmount) +
               ` Token${notOne ? "s" : ""}`}
           </ButtonWithLoader>
         </>

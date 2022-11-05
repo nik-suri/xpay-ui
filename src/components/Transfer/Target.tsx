@@ -5,16 +5,18 @@ import {
 } from "@certusone/wormhole-sdk";
 import { CHAIN_ID_NEAR } from "@certusone/wormhole-sdk/lib/esm";
 import { makeStyles, Typography } from "@material-ui/core";
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNearContext } from "../../contexts/NearWalletContext";
 import useGetTargetParsedTokenAccounts from "../../hooks/useGetTargetParsedTokenAccounts";
 import useIsWalletReady from "../../hooks/useIsWalletReady";
 import useSyncTargetAddress from "../../hooks/useSyncTargetAddress";
 import {
+  selectActualTokenAmount,
   selectTransferAmount,
   selectTransferIsTargetComplete,
   selectTransferShouldLockFields,
+  selectTransferSourceParsedTokenAccount,
   selectTransferTargetAddressHex,
   selectTransferTargetAsset,
   selectTransferTargetAssetWrapper,
@@ -23,7 +25,7 @@ import {
   selectTransferTargetError,
   selectTransferTargetParsedTokenAccount,
 } from "../../store/selectors";
-import { incrementStep } from "../../store/transferSlice";
+import { incrementStep, setActualTokenAmount } from "../../store/transferSlice";
 import { getEmitterAddressNear } from "../../utils/near";
 import ButtonWithLoader from "../ButtonWithLoader";
 import KeyAndBalance from "../KeyAndBalance";
@@ -94,6 +96,11 @@ function Target() {
   } = useTargetInfo();
   const uiAmountString = useSelector(selectTransferTargetBalanceString);
   const transferAmount = useSelector(selectTransferAmount);
+  const actualTokenAmount = useSelector(selectActualTokenAmount);
+  const sourceParsedTokenAccount = useSelector(
+    selectTransferSourceParsedTokenAccount
+  );
+  const sourceDecimals = sourceParsedTokenAccount?.decimals;
   const error = useSelector(selectTransferTargetError);
   const isTargetComplete = useSelector(selectTransferIsTargetComplete);
   const shouldLockFields = useSelector(selectTransferShouldLockFields);
@@ -103,6 +110,25 @@ function Target() {
   const handleNextClick = useCallback(() => {
     dispatch(incrementStep());
   }, [dispatch]);
+
+  // lookup 0x quote for targetAsset to USDC.MATIC
+  useEffect(() => {
+    const transferAmountAdjusted = parseFloat(transferAmount) * 1.029;
+    const machineUsdTfAmt = transferAmountAdjusted * 10 ** 6;
+    const url = `https://polygon.api.0x.org/swap/v1/quote?sellToken=USDC&buyToken=${targetAsset}&sellAmount=${machineUsdTfAmt}`;
+    console.log(url);
+    fetch(url)
+      .then((res) => res.json())
+      .then((json) => {
+        dispatch(setActualTokenAmount(json.buyAmount));
+      })
+      .catch(console.error);
+  }, [targetAsset, transferAmount]);
+
+  const actualTokenAmountHumanReadable = actualTokenAmount && sourceDecimals
+    ? (parseFloat(actualTokenAmount) / 10 ** sourceDecimals).toString()
+    : "";
+
   return (
     <>
       <KeyAndBalance chainId={targetChain} />
@@ -121,7 +147,7 @@ function Target() {
                   variant="h6"
                   isAsset
                 />
-                {`(Amount: ${transferAmount})`}
+                {`(Amount: ${actualTokenAmountHumanReadable})`}
               </Typography>
             </div>
           ) : null}

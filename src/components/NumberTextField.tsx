@@ -13,20 +13,6 @@ export default function NumberTextField({
     <TextField
       type="number"
       {...props}
-      InputProps={{
-        endAdornment: onMaxClick ? (
-          <InputAdornment position="end">
-            <Button
-              onClick={onMaxClick}
-              disabled={props.disabled}
-              variant="outlined"
-            >
-              Max
-            </Button>
-          </InputAdornment>
-        ) : undefined,
-        ...(props?.InputProps || {}),
-      }}
     ></TextField>
   );
 }
