@@ -61,7 +61,7 @@
   "scripts": {
     "testnetstart": "REACT_APP_CLUSTER=testnet npm start",
     "start": "react-app-rewired start",
-    "build": "react-app-rewired build",
+    "build": "GENERATE_SOURCEMAP=false react-app-rewired build",
     "test": "react-app-rewired test",
     "eject": "react-scripts eject"
   },
