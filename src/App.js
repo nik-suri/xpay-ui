@@ -6,17 +6,14 @@ import {
   Tabs,
   Typography,
 } from "@material-ui/core";
-import { useCallback } from "react";
-import { useHistory, useLocation } from "react-router";
-import {
-  Redirect,
-  Route,
-  Switch,
-} from "react-router-dom";
+import { useEffect, useMemo } from "react";
+import { useDispatch } from "react-redux";
+import { useLocation } from "react-router-dom";
 import Footer from "./components/Footer";
 import HeaderText from "./components/HeaderText";
 import Transfer from "./components/Transfer";
 import { useBetaContext } from "./contexts/BetaContext";
+import { setMerchantId } from "./store/transferSlice";
 import { CLUSTER } from "./utils/consts";
 
 const useStyles = makeStyles((theme) => ({
@@ -154,14 +151,16 @@ const useStyles = makeStyles((theme) => ({
 function App() {
   const classes = useStyles();
   const isBeta = useBetaContext();
-  const { push } = useHistory();
-  const { pathname } = useLocation();
-  const handleTabChange = useCallback(
-    (event, value) => {
-      push(value);
-    },
-    [push]
-  );
+  const dispatch = useDispatch();
+
+  const { search } = useLocation();
+  const query = useMemo(() => new URLSearchParams(search), [search]);
+  const pathMerchantId = query.get("merchantId");
+
+  useEffect(() => {
+    dispatch(setMerchantId(pathMerchantId));
+  }, [pathMerchantId, dispatch]);
+
   return (
     <div className={classes.bg}>
       {CLUSTER === "mainnet" ? null : (
@@ -179,38 +178,28 @@ function App() {
           </Typography>
         </AppBar>
       ) : null}
-      {["/transfer"].includes(pathname) ? (
-        <Container maxWidth="md" style={{ paddingBottom: 24 }}>
-          <HeaderText
-            white
-            subtitle={
-              <>
-                <Typography>
-                  Pay with any asset using the Portal Bridge (built on wormhole)
-                </Typography>
-              </>
-            }
-          >
-            xPay
-          </HeaderText>
-          <Tabs
-            value={pathname}
-            variant="fullWidth"
-            onChange={handleTabChange}
-            indicatorColor="primary"
-          >
-            <Tab label="Pay With Wormhole Token Bridge" value="/transfer" />
-          </Tabs>
-        </Container>
-      ) : null}
-      <Switch>
-        <Route exact path="/transfer">
-          <Transfer />
-        </Route>
-        <Route>
-          <Redirect to="/transfer" />
-        </Route>
-      </Switch>
+      <Container maxWidth="md" style={{ paddingBottom: 24 }}>
+        <HeaderText
+          white
+          subtitle={
+            <>
+              <Typography>
+                Pay with any asset using the Portal Bridge (built on wormhole)
+              </Typography>
+            </>
+          }
+        >
+          xPay
+        </HeaderText>
+        <Tabs
+          value={"transfer"}
+          variant="fullWidth"
+          indicatorColor="primary"
+        >
+          <Tab label="Pay With Wormhole Token Bridge" value="transfer" />
+        </Tabs>
+      </Container>
+      <Transfer />
       <div className={classes.spacer} />
       <div className={classes.gradientRight}></div>
       <div className={classes.gradientRight2}></div>

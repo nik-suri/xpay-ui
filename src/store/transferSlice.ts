@@ -66,6 +66,7 @@ export interface TransferState {
   useRelayer: boolean;
   relayerFee: string | undefined;
   acalaRelayerInfo: DataWrapper<AcalaRelayerInfo>;
+  merchantId: string | undefined;
 }
 
 const initialState: TransferState = {
@@ -94,6 +95,7 @@ const initialState: TransferState = {
   useRelayer: false,
   relayerFee: undefined,
   acalaRelayerInfo: getEmptyDataWrapper(),
+  merchantId: undefined,
 };
 
 export const transferSlice = createSlice({
@@ -311,6 +313,9 @@ export const transferSlice = createSlice({
     ) => {
       state.acalaRelayerInfo = receiveDataWrapper(action.payload);
     },
+    setMerchantId: (state, action: PayloadAction<string | undefined>) => {
+      state.merchantId = action.payload;
+    }
   },
 });
 
@@ -347,6 +352,7 @@ export const {
   fetchAcalaRelayerInfo,
   errorAcalaRelayerInfo,
   receiveAcalaRelayerInfo,
+  setMerchantId,
 } = transferSlice.actions;
 
 export default transferSlice.reducer;

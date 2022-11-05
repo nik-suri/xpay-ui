@@ -15,6 +15,7 @@ import useAllowance from "../../hooks/useAllowance";
 import { useHandleTransfer } from "../../hooks/useHandleTransfer";
 import useIsWalletReady from "../../hooks/useIsWalletReady";
 import {
+  selectMerchantId,
   selectSourceWalletAddress,
   selectTransferAmount,
   selectTransferIsSendComplete,
@@ -88,6 +89,8 @@ function Send() {
     parseUnits("1", sourceDecimals).toBigInt();
   const transferTx = useSelector(selectTransferTransferTx);
 
+  const merchantId = useSelector(selectMerchantId);
+
   async function checkTfExists(transferTx: Transaction) {
     // ensure transferTx is created in the db with the merchant fields
     try {
@@ -96,7 +99,7 @@ function Send() {
         chainId: sourceChain,
         emitterAddress: transferTx.emitterAddress,
         sequence: transferTx.sequence,
-        merchantId: 0,
+        merchantId: merchantId,
         orderId: 0
       });
       console.log("Document written with ID: ", transferTx.id);
