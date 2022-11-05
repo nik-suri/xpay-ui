@@ -41,7 +41,7 @@ import {
 } from "@terra-money/wallet-provider";
 import algosdk from "algosdk";
 import { Types } from "aptos";
-import { Signer } from "ethers";
+import { BigNumber, Signer } from "ethers";
 import { parseUnits, zeroPad } from "ethers/lib/utils";
 import { useSnackbar } from "notistack";
 import { useCallback, useMemo } from "react";
@@ -52,6 +52,7 @@ import { useEthereumProvider } from "../contexts/EthereumProviderContext";
 import { useNearContext } from "../contexts/NearWalletContext";
 import { useSolanaWallet } from "../contexts/SolanaWalletContext";
 import {
+  selectActualTokenAmount,
   selectTerraFeeDenom,
   selectTransferAmount,
   selectTransferIsSendComplete,
@@ -154,18 +155,15 @@ async function algo(
   enqueueSnackbar: any,
   senderAddr: string,
   tokenAddress: string,
-  decimals: number,
   amount: string,
   recipientChain: ChainId,
   recipientAddress: Uint8Array,
   chainId: ChainId,
-  relayerFee?: string
 ) {
   dispatch(setIsSending(true));
   try {
-    const baseAmountParsed = parseUnits(amount, decimals);
-    const feeParsed = parseUnits(relayerFee || "0", decimals);
-    const transferAmountParsed = baseAmountParsed.add(feeParsed);
+    const feeParsed = BigNumber.from("0")
+    const transferAmountParsed = BigNumber.from(amount);
     const algodClient = new algosdk.Algodv2(
       ALGORAND_HOST.algodToken,
       ALGORAND_HOST.algodServer,
@@ -212,7 +210,6 @@ async function aptos(
   dispatch: any,
   enqueueSnackbar: any,
   tokenAddress: string,
-  decimals: number,
   amount: string,
   recipientChain: ChainId,
   recipientAddress: Uint8Array,
@@ -223,14 +220,12 @@ async function aptos(
   ) => Promise<{
     hash: string;
   }>,
-  relayerFee?: string
 ) {
   dispatch(setIsSending(true));
   const tokenBridgeAddress = getTokenBridgeAddressForChain(CHAIN_ID_APTOS);
   try {
-    const baseAmountParsed = parseUnits(amount, decimals);
-    const feeParsed = parseUnits(relayerFee || "0", decimals);
-    const transferAmountParsed = baseAmountParsed.add(feeParsed);
+    const feeParsed = BigNumber.from("0");
+    const transferAmountParsed = BigNumber.from(amount);
     const transferPayload = transferTokens(
       tokenBridgeAddress,
       tokenAddress,
@@ -278,19 +273,16 @@ async function evm(
   enqueueSnackbar: any,
   signer: Signer,
   tokenAddress: string,
-  decimals: number,
   amount: string,
   recipientChain: ChainId,
   recipientAddress: Uint8Array,
   isNative: boolean,
   chainId: ChainId,
-  relayerFee?: string
 ) {
   dispatch(setIsSending(true));
   try {
-    const baseAmountParsed = parseUnits(amount, decimals);
-    const feeParsed = parseUnits(relayerFee || "0", decimals);
-    const transferAmountParsed = baseAmountParsed.add(feeParsed);
+    const feeParsed = BigNumber.from("0");
+    const transferAmountParsed = BigNumber.from(amount);
     // Klaytn requires specifying gasPrice
     const overrides =
       chainId === CHAIN_ID_KLAYTN
@@ -352,18 +344,15 @@ async function near(
   wallet: Wallet,
   senderAddr: string,
   tokenAddress: string,
-  decimals: number,
   amount: string,
   recipientChain: ChainId,
   recipientAddress: Uint8Array,
   chainId: ChainId,
-  relayerFee?: string
 ) {
   dispatch(setIsSending(true));
   try {
-    const baseAmountParsed = parseUnits(amount, decimals);
-    const feeParsed = parseUnits(relayerFee || "0", decimals);
-    const transferAmountParsed = baseAmountParsed.add(feeParsed);
+    const feeParsed = BigNumber.from("0")
+    const transferAmountParsed = BigNumber.from(amount);
     const account = await makeNearAccount(senderAddr);
     const msgs =
       tokenAddress === NATIVE_NEAR_PLACEHOLDER
@@ -418,16 +407,13 @@ async function xpla(
   wallet: XplaConnectedWallet,
   asset: string,
   amount: string,
-  decimals: number,
   targetChain: ChainId,
   targetAddress: Uint8Array,
-  relayerFee?: string
 ) {
   dispatch(setIsSending(true));
   try {
-    const baseAmountParsed = parseUnits(amount, decimals);
-    const feeParsed = parseUnits(relayerFee || "0", decimals);
-    const transferAmountParsed = baseAmountParsed.add(feeParsed);
+    const feeParsed = BigNumber.from("0");
+    const transferAmountParsed = BigNumber.from(amount);
     const tokenBridgeAddress = getTokenBridgeAddressForChain(CHAIN_ID_XPLA);
     const msgs = await transferFromXpla(
       wallet.xplaAddress,
@@ -480,20 +466,17 @@ async function solana(
   fromAddress: string,
   mintAddress: string,
   amount: string,
-  decimals: number,
   targetChain: ChainId,
   targetAddress: Uint8Array,
   isNative: boolean,
   originAddressStr?: string,
   originChain?: ChainId,
-  relayerFee?: string
 ) {
   dispatch(setIsSending(true));
   try {
     const connection = new Connection(SOLANA_HOST, "confirmed");
-    const baseAmountParsed = parseUnits(amount, decimals);
-    const feeParsed = parseUnits(relayerFee || "0", decimals);
-    const transferAmountParsed = baseAmountParsed.add(feeParsed);
+    const feeParsed = BigNumber.from("0");
+    const transferAmountParsed = BigNumber.from(amount);
     const originAddress = originAddressStr
       ? zeroPad(hexToUint8Array(originAddressStr), 32)
       : undefined;
@@ -560,18 +543,15 @@ async function terra(
   wallet: ConnectedWallet,
   asset: string,
   amount: string,
-  decimals: number,
   targetChain: ChainId,
   targetAddress: Uint8Array,
   feeDenom: string,
   chainId: TerraChainId,
-  relayerFee?: string
 ) {
   dispatch(setIsSending(true));
   try {
-    const baseAmountParsed = parseUnits(amount, decimals);
-    const feeParsed = parseUnits(relayerFee || "0", decimals);
-    const transferAmountParsed = baseAmountParsed.add(feeParsed);
+    const feeParsed = BigNumber.from("0")
+    const transferAmountParsed = BigNumber.from(amount);
     const tokenBridgeAddress = getTokenBridgeAddressForChain(chainId);
     const msgs = await transferFromTerra(
       wallet.terraAddress,
@@ -625,7 +605,7 @@ export function useHandleTransfer() {
   const sourceAsset = useSelector(selectTransferSourceAsset);
   const originChain = useSelector(selectTransferOriginChain);
   const originAsset = useSelector(selectTransferOriginAsset);
-  const amount = useSelector(selectTransferAmount);
+  const amount = useSelector(selectActualTokenAmount);
   const targetChain = useSelector(selectTransferTargetChain);
   const targetAddress = useTransferTargetAddressHex();
   const isTargetComplete = useSelector(selectTransferIsTargetComplete);
@@ -665,13 +645,11 @@ export function useHandleTransfer() {
         enqueueSnackbar,
         signer,
         sourceAsset,
-        decimals,
         amount,
         targetChain,
         targetAddress,
         isNative,
         sourceChain,
-        relayerFee
       );
     } else if (
       sourceChain === CHAIN_ID_SOLANA &&
@@ -690,13 +668,11 @@ export function useHandleTransfer() {
         sourceTokenPublicKey,
         sourceAsset,
         amount,
-        decimals,
         targetChain,
         targetAddress,
         isNative,
         originAsset,
         originChain,
-        relayerFee
       );
     } else if (
       isTerraChain(sourceChain) &&
@@ -711,12 +687,10 @@ export function useHandleTransfer() {
         terraWallet,
         sourceAsset,
         amount,
-        decimals,
         targetChain,
         targetAddress,
         terraFeeDenom,
         sourceChain,
-        relayerFee
       );
     } else if (
       sourceChain === CHAIN_ID_XPLA &&
@@ -731,10 +705,8 @@ export function useHandleTransfer() {
         xplaWallet,
         sourceAsset,
         amount,
-        decimals,
         targetChain,
         targetAddress,
-        relayerFee
       );
     } else if (
       sourceChain === CHAIN_ID_ALGORAND &&
@@ -748,12 +720,10 @@ export function useHandleTransfer() {
         enqueueSnackbar,
         algoAccounts[0].address,
         sourceAsset,
-        decimals,
         amount,
         targetChain,
         targetAddress,
         sourceChain,
-        relayerFee
       );
     } else if (
       sourceChain === CHAIN_ID_NEAR &&
@@ -769,12 +739,10 @@ export function useHandleTransfer() {
         wallet,
         nearAccountId,
         sourceAsset,
-        decimals,
         amount,
         targetChain,
         targetAddress,
         sourceChain,
-        relayerFee
       );
     } else if (
       sourceChain === CHAIN_ID_APTOS &&
@@ -787,13 +755,11 @@ export function useHandleTransfer() {
         dispatch,
         enqueueSnackbar,
         sourceAsset,
-        decimals,
         amount,
         targetChain,
         targetAddress,
         sourceChain,
         signAndSubmitTransaction,
-        relayerFee
       );
     } else {
     }

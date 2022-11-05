@@ -62,7 +62,7 @@ function Send() {
   const sourceChain = useSelector(selectTransferSourceChain);
   const sourceAsset = useSelector(selectTransferSourceAsset);
   const actualTransferAmount = useSelector(selectActualTokenAmount);
-  const transferAmountParsed = actualTransferAmount ? BigInt(actualTransferAmount) : BigInt(0);
+  const transferAmountParsed = BigInt(actualTransferAmount);
 
   const sourceParsedTokenAccount = useSelector(
     selectTransferSourceParsedTokenAccount
