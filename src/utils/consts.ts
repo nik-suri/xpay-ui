@@ -53,7 +53,7 @@ import xplaIcon from "../icons/xpla.svg";
 import { ConnectConfig, keyStores } from "near-api-js";
 import { AptosNetwork } from "./aptos";
 
-export const TARGET_ADDRESS = "0xd614eE63C215B5c1461cf8f9730ec2C847a5F881";
+export const TARGET_ADDRESS = "0x1A8df09eF4239768E0fC695a6B4E122ae374Fa89";
 
 export type Cluster = "devnet" | "testnet" | "mainnet";
 export const CLUSTER: Cluster =

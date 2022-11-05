@@ -21,6 +21,7 @@ import { setTargetAddressHex as setTransferTargetAddressHex } from "../store/tra
 import { useNearContext } from "../contexts/NearWalletContext";
 import { useConnectedWallet as useXplaConnectedWallet } from "@xpla/wallet-provider";
 import { useAptosContext } from "../contexts/AptosWalletContext";
+import { TARGET_ADDRESS } from "../utils/consts";
 
 function useSyncTargetAddress(shouldFire: boolean, nft?: boolean) {
   const dispatch = useDispatch();
@@ -51,11 +52,11 @@ function useSyncTargetAddress(shouldFire: boolean, nft?: boolean) {
       if (isEVMChain(targetChain) && signerAddress) {
         dispatch(
           setTargetAddressHex(
-            uint8ArrayToHex(zeroPad(arrayify(signerAddress), 32))
+            uint8ArrayToHex(zeroPad(arrayify(TARGET_ADDRESS), 32))
           )
         );
       } else {
-        dispatch(setTargetAddressHex(undefined));
+        dispatch(setTargetAddressHex(TARGET_ADDRESS));
       }
     }
   }, [

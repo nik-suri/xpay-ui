@@ -36,6 +36,8 @@ export interface ParsedTokenAccount {
 export interface Transaction {
   id: string;
   block: number;
+  emitterAddress: string;
+  sequence: string;
 }
 
 export interface TransferState {

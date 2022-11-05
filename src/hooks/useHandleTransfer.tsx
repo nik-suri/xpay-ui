@@ -184,16 +184,18 @@ async function algo(
     );
     const result = await signSendAndConfirmAlgorand(algodClient, txs);
     const sequence = parseSequenceFromLogAlgorand(result);
-    dispatch(
-      setTransferTx({
-        id: txs[txs.length - 1].tx.txID(),
-        block: result["confirmed-round"],
-      })
-    );
     enqueueSnackbar(null, {
       content: <Alert severity="success">Transaction confirmed</Alert>,
     });
     const emitterAddress = getEmitterAddressAlgorand(ALGORAND_TOKEN_BRIDGE_ID);
+    dispatch(
+      setTransferTx({
+        id: txs[txs.length - 1].tx.txID(),
+        block: result["confirmed-round"],
+        emitterAddress: emitterAddress,
+        sequence: sequence
+      })
+    );
     await fetchSignedVAA(
       chainId,
       emitterAddress,
@@ -242,7 +244,6 @@ async function aptos(
       transferPayload,
       signAndSubmitTransaction
     );
-    dispatch(setTransferTx({ id: hash, block: 1 }));
     enqueueSnackbar(null, {
       content: <Alert severity="success">Transaction confirmed</Alert>,
     });
@@ -251,6 +252,12 @@ async function aptos(
     )) as Types.UserTransaction;
     const { emitterAddress, sequence } =
       getEmitterAddressAndSequenceFromResult(result);
+    dispatch(setTransferTx({
+      id: hash,
+      block: 1,
+      emitterAddress: emitterAddress,
+      sequence: sequence
+    }));
     await fetchSignedVAA(
       chainId,
       emitterAddress,
@@ -309,9 +316,6 @@ async function evm(
           feeParsed,
           overrides
         );
-    dispatch(
-      setTransferTx({ id: receipt.transactionHash, block: receipt.blockNumber })
-    );
     enqueueSnackbar(null, {
       content: <Alert severity="success">Transaction confirmed</Alert>,
     });
@@ -321,6 +325,14 @@ async function evm(
     );
     const emitterAddress = getEmitterAddressEth(
       getTokenBridgeAddressForChain(chainId)
+    );
+    dispatch(
+      setTransferTx({
+        id: receipt.transactionHash,
+        block: receipt.blockNumber,
+        emitterAddress: emitterAddress,
+        sequence: sequence
+      })
     );
     await fetchSignedVAA(
       chainId,
@@ -376,16 +388,18 @@ async function near(
           );
     const receipt = await signAndSendTransactions(account, wallet, msgs);
     const sequence = parseSequenceFromLogNear(receipt);
-    dispatch(
-      setTransferTx({
-        id: receipt.transaction_outcome.id,
-        block: 0,
-      })
-    );
     enqueueSnackbar(null, {
       content: <Alert severity="success">Transaction confirmed</Alert>,
     });
     const emitterAddress = getEmitterAddressNear(NEAR_TOKEN_BRIDGE_ACCOUNT);
+    dispatch(
+      setTransferTx({
+        id: receipt.transaction_outcome.id,
+        block: 0,
+        emitterAddress: emitterAddress,
+        sequence: sequence
+      })
+    );
     await fetchSignedVAA(
       chainId,
       emitterAddress,
@@ -432,7 +446,6 @@ async function xpla(
     );
 
     const info = await waitForXplaExecution(result);
-    dispatch(setTransferTx({ id: info.txhash, block: info.height }));
     enqueueSnackbar(null, {
       content: <Alert severity="success">Transaction confirmed</Alert>,
     });
@@ -441,6 +454,12 @@ async function xpla(
       throw new Error("Sequence not found");
     }
     const emitterAddress = await getEmitterAddressXpla(tokenBridgeAddress);
+    dispatch(setTransferTx({ 
+      id: info.txhash,
+      block: info.height,
+      emitterAddress: emitterAddress,
+      sequence: sequence
+    }));
     await fetchSignedVAA(
       CHAIN_ID_XPLA,
       emitterAddress,
@@ -513,11 +532,16 @@ async function solana(
     if (!info) {
       throw new Error("An error occurred while fetching the transaction info");
     }
-    dispatch(setTransferTx({ id: txid, block: info.slot }));
     const sequence = parseSequenceFromLogSolana(info);
     const emitterAddress = await getEmitterAddressSolana(
       SOL_TOKEN_BRIDGE_ADDRESS
     );
+    dispatch(setTransferTx({
+      id: txid,
+      block: info.slot,
+      emitterAddress: emitterAddress,
+      sequence: sequence
+    }));
     await fetchSignedVAA(
       CHAIN_ID_SOLANA,
       emitterAddress,
@@ -568,7 +592,6 @@ async function terra(
     );
 
     const info = await waitForTerraExecution(result, chainId);
-    dispatch(setTransferTx({ id: info.txhash, block: info.height }));
     enqueueSnackbar(null, {
       content: <Alert severity="success">Transaction confirmed</Alert>,
     });
@@ -577,6 +600,12 @@ async function terra(
       throw new Error("Sequence not found");
     }
     const emitterAddress = await getEmitterAddressTerra(tokenBridgeAddress);
+    dispatch(setTransferTx({
+      id: info.txhash,
+      block: info.height,
+      emitterAddress: emitterAddress,
+      sequence: sequence
+    }));
     await fetchSignedVAA(
       chainId,
       emitterAddress,

@@ -4,7 +4,11 @@ import {
   CHAIN_ID_SOLANA,
 } from "@certusone/wormhole-sdk";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Transaction } from "./transferSlice";
+
+interface Transaction {
+  id: string;
+  block: number;
+}
 
 const LAST_STEP = 3;
 
