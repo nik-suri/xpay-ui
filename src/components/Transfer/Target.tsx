@@ -1,7 +1,6 @@
 import {
   CHAIN_ID_APTOS,
   hexToNativeString,
-  isEVMChain,
 } from "@certusone/wormhole-sdk";
 import { CHAIN_ID_NEAR } from "@certusone/wormhole-sdk/lib/esm";
 import { makeStyles, Typography } from "@material-ui/core";
@@ -104,7 +103,7 @@ function Target() {
   const error = useSelector(selectTransferTargetError);
   const isTargetComplete = useSelector(selectTransferIsTargetComplete);
   const shouldLockFields = useSelector(selectTransferShouldLockFields);
-  const { statusMessage, isReady } = useIsWalletReady(targetChain);
+  const { statusMessage } = useIsWalletReady(targetChain);
   const isLoading = !statusMessage && !targetAssetError && !data;
   useSyncTargetAddress(!shouldLockFields);
   const handleNextClick = useCallback(() => {
@@ -123,7 +122,7 @@ function Target() {
         dispatch(setActualTokenAmount(json.buyAmount));
       })
       .catch(console.error);
-  }, [targetAsset, transferAmount]);
+  }, [targetAsset, transferAmount, dispatch]);
 
   const actualTokenAmountHumanReadable = actualTokenAmount && sourceDecimals
     ? (parseFloat(actualTokenAmount) / 10 ** sourceDecimals).toString()

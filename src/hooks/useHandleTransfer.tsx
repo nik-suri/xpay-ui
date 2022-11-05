@@ -42,7 +42,7 @@ import {
 import algosdk from "algosdk";
 import { Types } from "aptos";
 import { BigNumber, Signer } from "ethers";
-import { parseUnits, zeroPad } from "ethers/lib/utils";
+import { zeroPad } from "ethers/lib/utils";
 import { useSnackbar } from "notistack";
 import { useCallback, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -54,13 +54,11 @@ import { useSolanaWallet } from "../contexts/SolanaWalletContext";
 import {
   selectActualTokenAmount,
   selectTerraFeeDenom,
-  selectTransferAmount,
   selectTransferIsSendComplete,
   selectTransferIsSending,
   selectTransferIsTargetComplete,
   selectTransferOriginAsset,
   selectTransferOriginChain,
-  selectTransferRelayerFee,
   selectTransferSourceAsset,
   selectTransferSourceChain,
   selectTransferSourceParsedTokenAccount,
@@ -624,7 +622,6 @@ export function useHandleTransfer() {
   const sourceParsedTokenAccount = useSelector(
     selectTransferSourceParsedTokenAccount
   );
-  const relayerFee = useSelector(selectTransferRelayerFee);
 
   const sourceTokenPublicKey = sourceParsedTokenAccount?.publicKey;
   const decimals = sourceParsedTokenAccount?.decimals;
@@ -768,7 +765,6 @@ export function useHandleTransfer() {
     enqueueSnackbar,
     sourceChain,
     signer,
-    relayerFee,
     solanaWallet,
     solPK,
     terraWallet,

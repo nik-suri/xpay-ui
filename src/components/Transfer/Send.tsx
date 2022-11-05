@@ -6,7 +6,7 @@ import {
 import { Checkbox, FormControlLabel } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
 import { ethers } from "ethers";
-import { formatUnits, parseUnits } from "ethers/lib/utils";
+import { parseUnits } from "ethers/lib/utils";
 import { doc, setDoc } from "firebase/firestore";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -18,10 +18,8 @@ import {
   selectActualTokenAmount,
   selectMerchantId,
   selectSourceWalletAddress,
-  selectTransferAmount,
   selectTransferIsSendComplete,
   selectTransferIsVAAPending,
-  selectTransferRelayerFee,
   selectTransferSourceAsset,
   selectTransferSourceChain,
   selectTransferSourceParsedTokenAccount,
