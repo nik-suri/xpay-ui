@@ -94,7 +94,7 @@ function Send() {
       await setDoc(doc(FIRESTORE_DB, "test", transferTx.id), {
         status: "CREATED",
         chainId: sourceChain,
-        emmitterAddress: transferTx.emitterAddress,
+        emitterAddress: transferTx.emitterAddress,
         sequence: transferTx.sequence,
         merchantId: 0,
         orderId: 0
