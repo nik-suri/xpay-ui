@@ -67,6 +67,7 @@
     "test": "react-app-rewired test",
     "eject": "react-scripts eject"
   },
+  "homepage": "https://nik-suri.github.io/xpay-ui",
   "eslintConfig": {
     "extends": [
       "react-app",
