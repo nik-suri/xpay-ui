@@ -63,6 +63,7 @@
     "mainnetstart": "REACT_APP_CLUSTER=mainnet REACT_APP_COVALENT_API_KEY=ckey_2df49266a766464382aa406dc6e npm start",
     "start": "GENERATE_SOURCEMAP=false react-app-rewired start",
     "build": "GENERATE_SOURCEMAP=false react-app-rewired build",
+    "mainnetbuild": "REACT_APP_CLUSTER=mainnet REACT_APP_COVALENT_API_KEY=ckey_2df49266a766464382aa406dc6e npm run build",
     "test": "react-app-rewired test",
     "eject": "react-scripts eject"
   },
