@@ -381,6 +381,10 @@ export const selectMerchantId = (state: RootState) => {
   return state.transfer.merchantId;
 }
 
+export const selectMerchantOrderId = (state: RootState) => {
+  return state.transfer.merchantOrderId;
+}
+
 export const selectActualTokenAmount = (state: RootState) => {
   return state.transfer.actualTokenAmount;
 }

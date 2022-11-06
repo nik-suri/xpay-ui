@@ -12,6 +12,7 @@ import { useHistory } from "react-router";
 import { Link } from "react-router-dom";
 import useIsWalletReady from "../../hooks/useIsWalletReady";
 import {
+  selectMerchantOrderId,
   selectTransferAmount,
   selectTransferIsSourceComplete,
   selectTransferShouldLockFields,
@@ -23,6 +24,7 @@ import {
 import {
   incrementStep,
   setAmount,
+  setMerchantOrderId,
   setSourceChain,
 } from "../../store/transferSlice";
 import {
@@ -98,6 +100,7 @@ function Source() {
     isSolanaMigration || isEthereumMigration || isBscMigration;
   const uiAmountString = useSelector(selectTransferSourceBalanceString);
   const amount = useSelector(selectTransferAmount);
+  const merchantOrderId = useSelector(selectMerchantOrderId);
   const error = useSelector(selectTransferSourceError);
   const isSourceComplete = useSelector(selectTransferIsSourceComplete);
   const shouldLockFields = useSelector(selectTransferShouldLockFields);
@@ -123,6 +126,12 @@ function Source() {
   const handleAmountChange = useCallback(
     (event) => {
       dispatch(setAmount(event.target.value));
+    },
+    [dispatch]
+  );
+  const handleMerchantOrderIdChange = useCallback(
+    (event) => {
+      dispatch(setMerchantOrderId(event.target.value));
     },
     [dispatch]
   );
@@ -192,15 +201,25 @@ function Source() {
             sourceAsset={parsedTokenAccount?.mintKey}
           />
           {hasParsedTokenAccount ? (
-            <NumberTextField
-              variant="outlined"
-              label="Amount (USD)"
-              fullWidth
-              className={classes.transferField}
-              value={amount}
-              disabled={shouldLockFields}
-              onChange={handleAmountChange}
-            />
+            <>
+              <NumberTextField
+                variant="outlined"
+                label="Order Amount (USD)"
+                fullWidth
+                className={classes.transferField}
+                value={amount}
+                disabled={shouldLockFields}
+                onChange={handleAmountChange}
+              />
+              <NumberTextField
+                variant="outlined"
+                label="Order ID (see your order completion page)"
+                fullWidth
+                className={classes.transferField}
+                value={merchantOrderId}
+                onChange={handleMerchantOrderIdChange}
+              />
+            </>
           ) : null}
           <ChainWarningMessage chainId={sourceChain} />
           <TransferLimitedWarning isTransferLimited={isTransferLimited} />

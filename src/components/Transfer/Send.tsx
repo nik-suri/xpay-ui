@@ -17,6 +17,7 @@ import useIsWalletReady from "../../hooks/useIsWalletReady";
 import {
   selectActualTokenAmount,
   selectMerchantId,
+  selectMerchantOrderId,
   selectSourceWalletAddress,
   selectTransferIsSendComplete,
   selectTransferIsVAAPending,
@@ -78,6 +79,7 @@ function Send() {
   const transferTx = useSelector(selectTransferTransferTx);
 
   const merchantId = useSelector(selectMerchantId);
+  const merchantOrderId = useSelector(selectMerchantOrderId);
 
   async function checkTfExists(transferTx: Transaction) {
     // ensure transferTx is created in the db with the merchant fields
@@ -88,7 +90,7 @@ function Send() {
         emitterAddress: transferTx.emitterAddress,
         sequence: transferTx.sequence,
         merchantId: merchantId,
-        orderId: 0
+        orderId: merchantOrderId,
       });
       console.log("Document written with ID: ", transferTx.id);
     } catch (e) {
