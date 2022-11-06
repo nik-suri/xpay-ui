@@ -79,7 +79,7 @@ const initialState: TransferState = {
   sourceParsedTokenAccounts: getEmptyDataWrapper(),
   originChain: undefined,
   originAsset: undefined,
-  amount: "10",
+  amount: "0.01",
   targetChain: CHAIN_ID_POLYGON,
   targetAddressHex: TARGET_ADDRESS,
   targetAsset: getEmptyDataWrapper(),

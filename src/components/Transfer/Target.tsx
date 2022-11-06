@@ -112,9 +112,12 @@ function Target() {
 
   // lookup 0x quote for targetAsset to USDC.MATIC
   useEffect(() => {
+    console.log(targetAsset);
+    console.log(transferAmount);
     const transferAmountAdjusted = parseFloat(transferAmount) * 1.029;
     const machineUsdTfAmt = transferAmountAdjusted * 10 ** 6;
-    const url = `https://polygon.api.0x.org/swap/v1/quote?sellToken=USDC&buyToken=${targetAsset}&sellAmount=${machineUsdTfAmt}`;
+    const machineUsdTfAmtInt = Math.round(machineUsdTfAmt);
+    const url = `https://polygon.api.0x.org/swap/v1/quote?sellToken=USDC&buyToken=${targetAsset}&sellAmount=${machineUsdTfAmtInt}`;
     console.log(url);
     fetch(url)
       .then((res) => res.json())
